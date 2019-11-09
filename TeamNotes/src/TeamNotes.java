@@ -68,15 +68,17 @@ public class TeamNotes extends Application {
         editors.put(tab, editor);
 	}
 	
-	private void closeTab(Tab tab) {
+	private void closeTab(TabPane tabPane, Tab tab) {
 		documents.remove(tab);
 		editors.remove(tab);
+		tabPane.getTabs().remove(tab);
 	}
 	
 	@Override
 	public void start(Stage stage) {
 		// Create the root VBox pane
 		final VBox root = new VBox();
+		root.setStyle("-fx-background-color: WHITE");
 		
 		// Create the TabPane and HBox pane (will be the button bar)
 		final TabPane tabPane = new TabPane();
@@ -110,8 +112,8 @@ public class TeamNotes extends Application {
 			    writer.close();
 			} catch (Exception e) {
 			}
-			
-			tabPane.getTabs().remove(current);
+
+			closeTab(tabPane, current);
 		});
 		final Button open = new Button("Open");
 		open.setOnAction(event -> {
