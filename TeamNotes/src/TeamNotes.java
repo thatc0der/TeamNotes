@@ -15,7 +15,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -94,12 +93,15 @@ public class TeamNotes extends Application {
 				return;
 			}
 		
-			// 
+			// Get the File associated with the Tab. If the File does not exist, allow the user to create the File
 			File file = documents.get(current);
 			if (file == null) {
 				final FileChooser chooser = new FileChooser();
+				chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("HTML Files", "*.html"));
 				try {
-					chooser.showSaveDialog(stage).createNewFile();
+					// Set the FileChooser to save dialog, and allow the user to enter the file they want to create. Then check if the file ends with .html
+					file = chooser.showSaveDialog(stage);
+					file.createNewFile();
 				} catch (Exception e) {
 				}
 					
