@@ -43,8 +43,10 @@ public class TeamNotes extends Application {
 	}
 	
 	private void createTab(TabPane tabPane, File file) {
-        // Create the Tab and HTMLEditor components
+        // Create the Tab and dont allow it to be closed if the TabPane has a length of 
         final Tab tab = new Tab(file.getName()); 
+        
+        // Create the HTMLEditor component
         final HTMLEditor editor = new HTMLEditor();
         
 		final StringBuilder builder = new StringBuilder();
@@ -71,6 +73,39 @@ public class TeamNotes extends Application {
 		documents.remove(tab);
 		editors.remove(tab);
 		tabPane.getTabs().remove(tab);
+	}
+	
+	private void closeAndReopenTab(TabPane tabPane, Tab tab, File file) {
+		// Get the index of the Tab from the TabPane's getTabs() List
+		final int index = tabPane.getTabs().indexOf(tab);
+		
+		// Remove the Tab from the TabPane and remove the Tab from the documents/editors Maps
+		tabPane.getTabs().remove(tab);
+		documents.remove(tab);
+		editors.remove(tab);
+		
+		// Create the new Tab and its HTML Editor then set the HTMLEditors text to the contents of the file
+		final Tab newTab = new Tab(file.getName());
+		final HTMLEditor editor = new HTMLEditor();
+		final StringBuilder builder = new StringBuilder();
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader(file));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		    	builder.append(str);
+		    }
+		    in.close();
+		} catch (IOException e) {
+		}
+        editor.setHtmlText(builder.toString());
+		
+        // Set the HTMLEditor to the Tab and add the Tab to the TabPane
+        newTab.setContent(editor);
+		tabPane.getTabs().add(index, newTab);
+		
+		// Map the Tab to its File/HTMLEditor
+        documents.put(tab, file);
+        editors.put(tab, editor);
 	}
 	
 	@Override
@@ -114,7 +149,7 @@ public class TeamNotes extends Application {
 			} catch (Exception e) {
 			}
 
-			closeTab(tabPane, current);
+			closeAndReopenTab(tabPane, current, file);
 		});
 		final Button open = new Button("Open");
 		open.setOnAction(event -> {
