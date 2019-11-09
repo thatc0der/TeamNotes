@@ -31,7 +31,7 @@ public class TeamNotes extends Application {
             
             final HTMLEditor editor = new HTMLEditor();
   
-            // add label to the tab 
+            // add label to the tab  
             tab.setContent(editor); 
   
             // add tab 
