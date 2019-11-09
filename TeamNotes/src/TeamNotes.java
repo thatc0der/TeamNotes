@@ -149,6 +149,9 @@ public class TeamNotes extends Application {
 			} catch (Exception e) {
 			}
 
+			if (file == null) {
+				return;
+			}
 			closeAndReopenTab(tabPane, current, file);
 		});
 		final Button open = new Button("Open");
