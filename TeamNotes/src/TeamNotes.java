@@ -80,8 +80,9 @@ public class TeamNotes extends Application {
 		final VBox root = new VBox();
 		root.setStyle("-fx-background-color: WHITE");
 		
-		// Create the TabPane and HBox pane (will be the button bar)
+		// Create the TabPane (and create blank tab so the GUI isnt empty when run) and HBox pane (will be the button bar)
 		final TabPane tabPane = new TabPane();
+		createNewTab(tabPane);
 		final HBox buttonPane = new HBox();
 		
 		// Create the Save, Open, and New Doc buttons and define their listeners
@@ -96,10 +97,9 @@ public class TeamNotes extends Application {
 			// 
 			File file = documents.get(current);
 			if (file == null) {
-				final DirectoryChooser chooser = new DirectoryChooser();
+				final FileChooser chooser = new FileChooser();
 				try {
-					file = chooser.showDialog(stage);
-					file.createNewFile();
+					chooser.showSaveDialog(stage).createNewFile();
 				} catch (Exception e) {
 				}
 					
@@ -108,7 +108,6 @@ public class TeamNotes extends Application {
 			try {
 			    final BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsolutePath()));
 			    writer.write(editors.get(current).getHtmlText());
-			    //writer.newLine(); 
 			    writer.close();
 			} catch (Exception e) {
 			}
