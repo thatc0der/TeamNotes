@@ -132,8 +132,9 @@ public class TeamNotes extends Application {
 		tabPane.getTabs().add(index, newTab);
 		
 		// Map the Tab to its File/HTMLEditor
-        documents.put(tab, file);
-        editors.put(tab, editor);
+		
+        documents.put(newTab, file);
+        editors.put(newTab, editor);
 	}
 	
 	private String getSelectedText(Tab tab) {
