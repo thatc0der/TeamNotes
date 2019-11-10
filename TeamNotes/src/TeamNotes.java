@@ -78,17 +78,11 @@ public class TeamNotes extends Application {
 	
 	// Initializes the Save file Button
 	private Button initializeSaveButton(Stage stage, TabPane tabPane) {
-		// Create the Save, Open, and New Doc buttons and define their listeners
 		final Button save = new Button("Save File");
 		save.setTooltip(new Tooltip("Click to save an existing file or create a new one"));
 		save.setOnAction(event -> {
-			// Get the current Tab, make sure it exists (the current Tab would not exist if no Tabs are opened in the TabPane)
-			final Tab current = tabPane.getSelectionModel().getSelectedItem();
-			if (current == null) {
-				return;
-			}
-		
 			// Get the File associated with the Tab. If the File does not exist, allow the user to create the File
+			final Tab current = tabPane.getSelectionModel().getSelectedItem();
 			File file = documents.get(current);
 			if (file == null) {
 				final FileChooser chooser = new FileChooser();
@@ -102,6 +96,7 @@ public class TeamNotes extends Application {
 					
 			} 
 			
+			// Write the HTMLEditors contents to the File
 			try {
 			    final BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsolutePath()));
 			    writer.write(editors.get(current).getHtmlText());
@@ -109,9 +104,12 @@ public class TeamNotes extends Application {
 			} catch (Exception e) {
 			}
 
+			// Check if the File is null (this is a special case if the user opens the dialog menu then immediately presses escape)
 			if (file == null) {
 				return;
 			}
+
+			// Close and reopen the Tab after saving
 			closeAndReopenTab(tabPane, current, file);
 		});
 		
@@ -131,16 +129,14 @@ public class TeamNotes extends Application {
 		final Button code = new Button("Run Code");
 		code.setTooltip(new Tooltip("Highlight and click this button to execute Java code"));
 		code.setOnAction(event -> {
+			// Check if the user selected (highlighted) any text
 			final Tab current = tabPane.getSelectionModel().getSelectedItem();
-			if (current == null) {
-				return;
-			}
-			
 			final String selected = getSelectedText(current);
 			if (selected == null || selected.isEmpty()) {
 				return;
 			}
 			
+			// BeanShell 
 			final Interpreter i = new Interpreter();
 			String output = "Input:\n> " + selected + "\n\nOutput:\n> ";
 			try {
@@ -151,6 +147,7 @@ public class TeamNotes extends Application {
 				output += e.toString();
 			}
 			
+			// Create the components for the Stage that has the 
 			final BorderPane borderPane = new BorderPane();
 			borderPane.setStyle("-fx-background-color: BLACK");
 			final Text text = new Text(output);
@@ -189,6 +186,7 @@ public class TeamNotes extends Application {
         final Tab tab = addCloseListener(new Tab(file.getName()), tabPane); 
         final HTMLEditor editor = new HTMLEditor();
 		final StringBuilder builder = new StringBuilder();
+		
 		try {
 		    final BufferedReader in = new BufferedReader(new FileReader(file));
 		    String str;
