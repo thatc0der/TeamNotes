@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,36 +136,65 @@ public class TeamNotes extends Application {
 			if (selected == null || selected.isEmpty()) {
 				return;
 			}
-			
-			// BeanShell 
-			final Interpreter i = new Interpreter();
-			String output = "Input:\n> " + selected + "\n\nOutput:\n> ";
+		
 			try {
-				output += i.eval(selected);
-				//output += 
+				bsh(selected, current);
 			} catch (EvalError e) {
-				//output += e.getMessage();
-				output += e.toString();
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			
-			// Create the components for the Stage that has the 
-			final BorderPane borderPane = new BorderPane();
-			borderPane.setStyle("-fx-background-color: BLACK");
-			final Text text = new Text(output);
-			text.setFill(Color.WHITE);
-			text.setStyle("-fx-font-size: 16px;");
-			borderPane.setCenter(text);
-			
-			final Scene outputScene = new Scene(borderPane, 500, 500);
-			final Stage outputStage = new Stage();
-			outputStage.getIcons().add(new Image("Icon.png"));
-			outputStage.setTitle(current.getText() + " Output");
-			outputStage.setScene(outputScene);
-			outputStage.show();
-        });
+		});
+		
+		
+		
 		
 		return code;
 	}
+		
+		
+	private void bsh(String selector, Tab current) throws EvalError{
+		// BeanShell 
+					Wrapper w = new Wrapper();
+					Interpreter i = new Interpreter(w);
+					
+					
+					 Object output = "Input:\n> " + selector + "\n\nOutput:\n> ";
+					
+
+					try {
+						output = i.eval(selector);
+					} catch (EvalError e) {
+						//output += e.getMessage();
+						output = e.toString();
+					}
+					
+					// Create the components for the Stage that has the 
+					final BorderPane borderPane = new BorderPane();
+					
+					try {
+						w.baos.flush();
+						w.baos.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					String data = new String(w.baos.toByteArray(), StandardCharsets.UTF_8);
+					
+					//borderPane.setStyle("-fx-background-color: BLACK");
+					final Text text = new Text(data);
+					text.setFill(Color.WHITE);
+					text.setStyle("-fx-font-size: 16px;");
+					borderPane.setCenter(text);
+					
+					final Scene outputScene = new Scene(borderPane, 500, 500);
+					final Stage outputStage = new Stage();
+					outputStage.getIcons().add(new Image("Icon.png"));
+					outputStage.setTitle(current.getText() + " Output");
+					outputStage.setScene(outputScene);
+					outputStage.show();
+		        
+		
+}	
 	
 	// Creates a new Tab (document) on a TabPane
 	private void createNewTab(TabPane tabPane) {
