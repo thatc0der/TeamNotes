@@ -43,10 +43,8 @@ public class TeamNotes extends Application {
 	}
 	
 	private void createTab(TabPane tabPane, File file) {
-        // Create the Tab and dont allow it to be closed if the TabPane has a length of 
+        // Create the Tab and the HTMLEditor component
         final Tab tab = new Tab(file.getName()); 
-        
-        // Create the HTMLEditor component
         final HTMLEditor editor = new HTMLEditor();
         
 		final StringBuilder builder = new StringBuilder();
