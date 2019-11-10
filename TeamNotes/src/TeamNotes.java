@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
@@ -174,6 +175,10 @@ public class TeamNotes extends Application {
         root.getChildren().add(buttonPane);
         root.getChildren().add(tabPane);
 		
+        // Add an icon and title to the Stage
+        stage.getIcons().add(new Image("Icon.png"));
+        stage.setTitle("JNotes");
+        
         // Create the Scene, set the Stage's Scene, and make the Stage visible
 		final Scene scene = new Scene(root, MENU_SIZE, MENU_SIZE);
 		stage.setScene(scene);
