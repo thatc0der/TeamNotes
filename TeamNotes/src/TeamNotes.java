@@ -1,28 +1,31 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import bsh.EvalError;
+import bsh.Interpreter;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import bsh.EvalError;
-import bsh.Interpreter;
 
 public class TeamNotes extends Application {
 	private static final int MENU_SIZE = 800;
@@ -189,6 +192,7 @@ public class TeamNotes extends Application {
 			}
 			closeAndReopenTab(tabPane, current, file);
 		});
+		
 		final Button open = new Button("Open");
 		open.setOnAction(event -> {
 			// Create the FileChooser and set its filter to only show HTML files
@@ -206,20 +210,7 @@ public class TeamNotes extends Application {
 		
 		final Button newTab = new Button("New");
 		newTab.setOnAction(event -> createNewTab(tabPane));
-		final Button test = new Button("TEST");
-		test.setOnAction(event -> {
-			final Tab current = tabPane.getSelectionModel().getSelectedItem();
-			if (current == null) {
-				return;
-			}
-			
-			final HTMLEditor editor = editors.get(current);
-			if (editor == null) {
-				return;
-			}
-
-
-		});
+		
 		final Button code= new Button("Code");
 		code.setOnAction(event -> {
 			final Tab current = tabPane.getSelectionModel().getSelectedItem();
@@ -232,13 +223,30 @@ public class TeamNotes extends Application {
 				return;
 			}
 			
-			Interpreter i = new Interpreter();
+			final Interpreter i = new Interpreter();
+			
+			
+		
+			Object output;
+			
 			try {
-				i.eval(selected);
+				System.out.println("Selected" + selected);
+				output = i.print(selected);
+				output =  i.get(selected);
+				
 			} catch (EvalError e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				output = e.getMessage();
+				//output = e.toString();
 			}
+			
+			final BorderPane borderPane = new BorderPane();
+			final Text text = new Text(output + " hi");
+			borderPane.setCenter(text);
+			
+			final Scene outputScene = new Scene(borderPane, 500, 500);
+			final Stage outputStage = new Stage();
+			outputStage.setScene(outputScene);
+			outputStage.show();
         });
 		
 		
@@ -263,6 +271,25 @@ public class TeamNotes extends Application {
 		
 		
 	}
+	
+	private String getSelected(String selected) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		
+		PrintStream old = System.out;
+		
+		System.setOut(ps);
+		
+		System.out.flush();
+		
+		System.setOut(old);
+		
+		
+		
+		
+		
+		return baos.toString();
+		
 	}
-
+}
 	
