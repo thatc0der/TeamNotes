@@ -10,15 +10,18 @@ import java.util.Map;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+import bsh.EvalError;
 import bsh.Interpreter;
 
 public class TeamNotes extends Application {
@@ -27,6 +30,26 @@ public class TeamNotes extends Application {
 	private final Map<Tab, File> documents = new HashMap<>();
 	// Create the HashMap which will map tabs to their HTMLEditor
 	private final Map<Tab, HTMLEditor> editors = new HashMap<>();
+	  public static final String SELECT_TEXT =
+	            "(function getSelectionText() {\n" +
+	            "    var text = \"\";\n" +
+	            "    if (window.getSelection) {\n" +
+	            "        text = window.getSelection().toString();\n" +
+	            "    } else if (document.selection && document.selection.type != \"Control\") {\n" +
+	            "        text = document.selection.createRange().text;\n" +
+	            "    }\n" +
+	            "    if (window.getSelection) {\n" +
+	            "      if (window.getSelection().empty) {  // Chrome\n" +
+	            "        window.getSelection().empty();\n" +
+	            "      } else if (window.getSelection().removeAllRanges) {  // Firefox\n" +
+	            "        window.getSelection().removeAllRanges();\n" +
+	            "      }\n" +
+	            "    } else if (document.selection) {  // IE?\n" +
+	            "      document.selection.empty();\n" +
+	            "    }" +
+	            "    return text;\n" +
+	            "})()";
+
 
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -49,7 +72,6 @@ public class TeamNotes extends Application {
         // Create the Tab and the HTMLEditor component
         final Tab tab = new Tab(file.getName()); 
         final HTMLEditor editor = new HTMLEditor();
-        
 		final StringBuilder builder = new StringBuilder();
 		try {
 		    final BufferedReader in = new BufferedReader(new FileReader(file));
@@ -108,6 +130,18 @@ public class TeamNotes extends Application {
         documents.put(tab, file);
         editors.put(tab, editor);
 	}
+	
+	private String getSelectedText(Tab tab) {
+        final WebView webView = (WebView) editors.get(tab).lookup("WebView");
+        if (webView == null) {
+        	return null;
+        }
+        
+        final WebEngine engine = webView.getEngine();
+        final Object selection = engine.executeScript(SELECT_TEXT);
+     	return (selection instanceof String) ? (String) selection : null;
+	}
+
 	
 	@Override
 	public void start(Stage stage) {
@@ -169,6 +203,7 @@ public class TeamNotes extends Application {
 			
 			createTab(tabPane, file);
 		});
+		
 		final Button newTab = new Button("New");
 		newTab.setOnAction(event -> createNewTab(tabPane));
 		final Button test = new Button("TEST");
@@ -185,9 +220,30 @@ public class TeamNotes extends Application {
 			
 			
 		});
+		final Button code= new Button("Code");
+		code.setOnAction(event -> {
+			final Tab current = tabPane.getSelectionModel().getSelectedItem();
+			if (current == null) {
+				return;
+			}
+			
+			final String selected = getSelectedText(current);
+			if (selected == null || selected.isEmpty()) {
+				return;
+			}
+			
+			Interpreter i = new Interpreter();
+			try {
+				i.eval(selected);
+			} catch (EvalError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        });
+		
 		
 		// Add the Buttons to the HBox and add the two panes to the root pane
-		buttonPane.getChildren().addAll(open, save, newTab);
+		buttonPane.getChildren().addAll(open, save, newTab, code);
         root.getChildren().add(buttonPane);
         root.getChildren().add(tabPane);
 		
@@ -200,14 +256,13 @@ public class TeamNotes extends Application {
 		stage.setScene(scene);
 		stage.show();
 		
-		Interpreter i=new Interpreter();
+	        
+		
 
-//		// Declare method or source from file
-//		i.eval("foo( args ) { ... }");
-//
-//		i.eval("foo(args)"); // repeatedly invoke the method
-//		i.eval("foo(args)");
+		
+		
+		
 	}
+	}
+
 	
-	
-}
