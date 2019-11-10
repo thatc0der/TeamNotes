@@ -182,8 +182,8 @@ public class TeamNotes extends Application {
 			if (editor == null) {
 				return;
 			}
-			
-			
+
+
 		});
 		
 		// Add the Buttons to the HBox and add the two panes to the root pane
