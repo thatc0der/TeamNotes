@@ -33,16 +33,16 @@ public class TeamNotes extends Application {
 	}
 	
 	private void createNewTab(TabPane tabPane) {
-            // Create the Tab and HTMLEditor components
-            final Tab tab = new Tab("Untitled Doc"); 
-            final HTMLEditor editor = new HTMLEditor();
+		// Create the Tab and HTMLEditor components
+        final Tab tab = new Tab("Untitled Doc"); 
+        final HTMLEditor editor = new HTMLEditor();
   
-            // Add the HTMLEditor 
-            tab.setContent(editor); 
-            tabPane.getTabs().add(tab); 
+        // Add the HTMLEditor 
+        tab.setContent(editor); 
+        tabPane.getTabs().add(tab); 
             
-            documents.put(tab, null);
-            editors.put(tab, editor);
+        documents.put(tab, null);
+        editors.put(tab, editor);
 	}
 	
 	private void createTab(TabPane tabPane, File file) {
@@ -52,7 +52,7 @@ public class TeamNotes extends Application {
         
 		final StringBuilder builder = new StringBuilder();
 		try {
-		    BufferedReader in = new BufferedReader(new FileReader(file));
+		    final BufferedReader in = new BufferedReader(new FileReader(file));
 		    String str;
 		    while ((str = in.readLine()) != null) {
 		    	builder.append(str);
@@ -65,7 +65,7 @@ public class TeamNotes extends Application {
         editor.setHtmlText(builder.toString());
         tab.setContent(editor); 
         tabPane.getTabs().add(tab); 
-        
+
         documents.put(tab, file);
         editors.put(tab, editor);
 	}
@@ -90,7 +90,7 @@ public class TeamNotes extends Application {
 		final HTMLEditor editor = new HTMLEditor();
 		final StringBuilder builder = new StringBuilder();
 		try {
-		    BufferedReader in = new BufferedReader(new FileReader(file));
+		    final BufferedReader in = new BufferedReader(new FileReader(file));
 		    String str;
 		    while ((str = in.readLine()) != null) {
 		    	builder.append(str);
@@ -171,6 +171,20 @@ public class TeamNotes extends Application {
 		});
 		final Button newTab = new Button("New");
 		newTab.setOnAction(event -> createNewTab(tabPane));
+		final Button test = new Button("TEST");
+		test.setOnAction(event -> {
+			final Tab current = tabPane.getSelectionModel().getSelectedItem();
+			if (current == null) {
+				return;
+			}
+			
+			final HTMLEditor editor = editors.get(current);
+			if (editor == null) {
+				return;
+			}
+			
+			
+		});
 		
 		// Add the Buttons to the HBox and add the two panes to the root pane
 		buttonPane.getChildren().addAll(open, save, newTab);
@@ -188,11 +202,11 @@ public class TeamNotes extends Application {
 		
 		Interpreter i=new Interpreter();
 
-		// Declare method or source from file
-		i.eval("foo( args ) { ... }");
-
-		i.eval("foo(args)"); // repeatedly invoke the method
-		i.eval("foo(args)");
+//		// Declare method or source from file
+//		i.eval("foo( args ) { ... }");
+//
+//		i.eval("foo(args)"); // repeatedly invoke the method
+//		i.eval("foo(args)");
 	}
 	
 	
