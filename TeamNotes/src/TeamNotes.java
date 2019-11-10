@@ -57,7 +57,7 @@ public class TeamNotes extends Application {
 	
 	// Initializes the Open file Button
 	private Button initializeOpenButton(Stage stage, TabPane tabPane) {
-		final Button open = new Button("Open File");
+		final Button open = new Button("Open File"); 
 		open.setTooltip(new Tooltip("Click to open an HTML file"));
 		open.setOnAction(event -> {
 			// Create the FileChooser and set its filter to only show HTML files
