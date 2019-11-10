@@ -19,6 +19,8 @@ import javafx.scene.web.HTMLEditor;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import bsh.Interpreter;
+
 public class TeamNotes extends Application {
 	private static final int MENU_SIZE = 800;
 	// Create the HashMap which will map tabs (documents) to their file
@@ -183,6 +185,14 @@ public class TeamNotes extends Application {
 		final Scene scene = new Scene(root, MENU_SIZE, MENU_SIZE);
 		stage.setScene(scene);
 		stage.show();
+		
+		Interpreter i=new Interpreter();
+
+		// Declare method or source from file
+		i.eval("foo( args ) { ... }");
+
+		i.eval("foo(args)"); // repeatedly invoke the method
+		i.eval("foo(args)");
 	}
 	
 	
