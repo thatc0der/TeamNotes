@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -29,12 +28,13 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class TeamNotes extends Application {
+	// The base size of the GUI
 	private static final int MENU_SIZE = 800;
 	// Create the HashMap which will map tabs (documents) to their file
 	private final Map<Tab, File> documents = new HashMap<>();
 	// Create the HashMap which will map tabs to their HTMLEditor
 	private final Map<Tab, HTMLEditor> editors = new HashMap<>();
-	// Credit: https://gist.github.com/jewelsea/7819195
+	// Script that allows us to get the selected (highlighted) text from an HTMLEditor (Credit: https://gist.github.com/jewelsea/7819195)
 	private static final String SELECT_TEXT =
 	            "(function getSelectionText() {\n" +
 	            "    var text = \"\";\n" +
@@ -54,11 +54,12 @@ public class TeamNotes extends Application {
 	            "    }" +
 	            "    return text;\n" +
 	            "})()";
-
-
-	public static void main(String[] args) {
-		Application.launch(args);
-	}
+	
+//	private Button initializeOpenButton() {
+//		
+//	}
+//	
+//	private Button initialize
 	
 	private void createNewTab(TabPane tabPane) {
 		// Create the Tab and HTMLEditor components
@@ -269,6 +270,10 @@ public class TeamNotes extends Application {
 		final Scene scene = new Scene(root, MENU_SIZE, MENU_SIZE);
 		stage.setScene(scene);
 		stage.show();		
+	}
+	
+	public static void main(String[] args) {
+		Application.launch(args);
 	}
 	
 }
