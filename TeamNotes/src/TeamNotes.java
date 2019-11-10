@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,10 +15,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebEngine;
@@ -33,7 +34,8 @@ public class TeamNotes extends Application {
 	private final Map<Tab, File> documents = new HashMap<>();
 	// Create the HashMap which will map tabs to their HTMLEditor
 	private final Map<Tab, HTMLEditor> editors = new HashMap<>();
-	  public static final String SELECT_TEXT =
+	// Credit: https://gist.github.com/jewelsea/7819195
+	private static final String SELECT_TEXT =
 	            "(function getSelectionText() {\n" +
 	            "    var text = \"\";\n" +
 	            "    if (window.getSelection) {\n" +
@@ -71,7 +73,7 @@ public class TeamNotes extends Application {
         editors.put(tab, editor);
 	}
 	
-	private void createTab(TabPane tabPane, File file) {
+	private void createTabFromFile(TabPane tabPane, File file) {
         // Create the Tab and the HTMLEditor component
         final Tab tab = new Tab(file.getName()); 
         final HTMLEditor editor = new HTMLEditor();
@@ -158,7 +160,8 @@ public class TeamNotes extends Application {
 		final HBox buttonPane = new HBox();
 		
 		// Create the Save, Open, and New Doc buttons and define their listeners
-		final Button save = new Button("Save");
+		final Button save = new Button("Save File");
+		save.setTooltip(new Tooltip("Click to save an existing file or create a new one"));
 		save.setOnAction(event -> {
 			// Get the current Tab, make sure it exists (the current Tab would not exist if no Tabs are opened in the TabPane)
 			final Tab current = tabPane.getSelectionModel().getSelectedItem();
@@ -193,7 +196,8 @@ public class TeamNotes extends Application {
 			closeAndReopenTab(tabPane, current, file);
 		});
 		
-		final Button open = new Button("Open");
+		final Button open = new Button("Open File");
+		open.setTooltip(new Tooltip("Click to open an HTML file"));
 		open.setOnAction(event -> {
 			// Create the FileChooser and set its filter to only show HTML files
 			final FileChooser fileChooser = new FileChooser();
@@ -205,13 +209,15 @@ public class TeamNotes extends Application {
 				return;
 			}
 			
-			createTab(tabPane, file);
+			createTabFromFile(tabPane, file);
 		});
 		
-		final Button newTab = new Button("New");
+		final Button newTab = new Button("New Document");
+		newTab.setTooltip(new Tooltip("Click to create a new, blank document"));
 		newTab.setOnAction(event -> createNewTab(tabPane));
 		
-		final Button code= new Button("Code");
+		final Button code = new Button("Run Code");
+		code.setTooltip(new Tooltip("Highlight and click this button to execute Java code"));
 		code.setOnAction(event -> {
 			final Tab current = tabPane.getSelectionModel().getSelectedItem();
 			if (current == null) {
@@ -224,27 +230,26 @@ public class TeamNotes extends Application {
 			}
 			
 			final Interpreter i = new Interpreter();
-			
-			
-		
-			Object output;
-			
+			String output = "Input:\n> " + selected + "\n\nOutput:\n> ";
 			try {
-				System.out.println("Selected" + selected);
-				output = i.print(selected);
-				output =  i.get(selected);
-				
+				output += i.eval(selected);
+				//output += 
 			} catch (EvalError e) {
-				output = e.getMessage();
-				//output = e.toString();
+				//output += e.getMessage();
+				output += e.toString();
 			}
 			
 			final BorderPane borderPane = new BorderPane();
-			final Text text = new Text(output + " hi");
+			borderPane.setStyle("-fx-background-color: BLACK");
+			final Text text = new Text(output);
+			text.setFill(Color.WHITE);
+			text.setStyle("-fx-font-size: 16px;");
 			borderPane.setCenter(text);
 			
 			final Scene outputScene = new Scene(borderPane, 500, 500);
 			final Stage outputStage = new Stage();
+			outputStage.getIcons().add(new Image("Icon.png"));
+			outputStage.setTitle(current.getText() + " Output");
 			outputStage.setScene(outputScene);
 			outputStage.show();
         });
@@ -254,7 +259,7 @@ public class TeamNotes extends Application {
 		buttonPane.getChildren().addAll(open, save, newTab, code);
         root.getChildren().add(buttonPane);
         root.getChildren().add(tabPane);
-		
+        
         // Add an icon and title to the Stage
         stage.getIcons().add(new Image("Icon.png"));
         stage.setTitle("JNotes");
@@ -262,34 +267,8 @@ public class TeamNotes extends Application {
         // Create the Scene, set the Stage's Scene, and make the Stage visible
 		final Scene scene = new Scene(root, MENU_SIZE, MENU_SIZE);
 		stage.setScene(scene);
-		stage.show();
-		
-	        
-		
-
-		
-		
-		
+		stage.show();		
 	}
 	
-	private String getSelected(String selected) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(baos);
-		
-		PrintStream old = System.out;
-		
-		System.setOut(ps);
-		
-		System.out.flush();
-		
-		System.setOut(old);
-		
-		
-		
-		
-		
-		return baos.toString();
-		
-	}
 }
 	
