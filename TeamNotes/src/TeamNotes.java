@@ -68,7 +68,7 @@ public class TeamNotes extends Application {
 			final File file = fileChooser.showOpenDialog(stage);
 			if (file == null) {
 				return;
-			}
+			} 
 			
 			createTabFromFile(tabPane, file);
 		});
