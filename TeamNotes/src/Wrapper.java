@@ -6,15 +6,10 @@ import java.io.UnsupportedEncodingException;
 import bsh.ConsoleInterface;
 
 public class Wrapper implements ConsoleInterface {
-
-	volatile String text = "init val";
-	
-			
-			
 	final static ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	
 	final PrintStream out = make();
-	
+	volatile String text = "init val";
+
 	private static PrintStream make () {
 		try {
 			return new PrintStream(baos, true, "UTF-8");
@@ -23,8 +18,6 @@ public class Wrapper implements ConsoleInterface {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	
 	
 	@Override
 	public void error(Object arg0) {
